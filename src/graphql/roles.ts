@@ -2,6 +2,15 @@ export const RolePermissions: any = {
     anonymous: {
       permissions: <string[]>[],
     },
+    admin: {
+      permissions: ["admin:all"],
+    },
+    Operations: {
+      permissions: ["Operations:all"],
+    },
+    "Customer Service": {
+      permissions: ["Customer Service:all"],
+    },
     customer: {
       permissions: ["self:customer"],
     },

@@ -1,10 +1,10 @@
 import { GraphQLError } from 'graphql';
 import { mapSchema, getDirective, MapperKind } from "@graphql-tools/utils";
-import { RolePermissions } from "./roles.js";
+import { RolePermissions } from "./roles";
 import { defaultFieldResolver } from "graphql";
 
 function isAuthorized(fieldPermissions: any, typePermissions: any, user: any) {
-  const userRoles = user?.roles ?? [];
+  const userRoles = [user?.roles] ?? [];
   // Add self:anyone to user permissions by default
   const userPermissions = new Set(["self:anyone"]);
   // 1. Expand user roles to permissions

@@ -1,0 +1,123 @@
+directive @auth(permissions: [String!]) on FIELD_DEFINITION | OBJECT
+
+type Query {
+  # Public health endpoint
+  health: String 
+  @auth(permissions: ["self:anyone"])
+
+  #Get all users
+  getUsers: [Users] 
+  @auth(permissions: ["admin:all"])
+
+  #Get all bank payees
+  getNewBankBooks: [Payees] 
+  @auth(permissions: ["Operations:all"])
+
+  # Should only be accessible only to the currently logged in customer
+  me: Customer 
+  @auth(permissions: ["self:customer"])
+
+
+  # Should only be accessible by employees with read access to customer data
+  # customers: [Customer] 
+  # @auth(permissions: ["customer:read"])
+
+  # Should only be accessible by employees with read access to invoice data
+#   getCustomerInvoices(customerId: ID!): [Invoice]
+#   @auth(permissions: ["invoice:read"])
+}
+
+type Mutation {
+  # Should be accessible to all users
+  signUp(username: String!, password: String!, name: String, roles: String!): Users! 
+  @auth(permissions: ["admin:all"])
+
+  # Should be accessible to all users
+  login(username: String!, password: String!): AccessToken!
+  @auth(permissions: ["self:anyone"])
+
+  #Delete User
+  deleteUser(recordId: String!): String
+  @auth(permissions: ["admin:all"])
+
+   #Get user by username
+  findByUsername(username: String!): Users
+  @auth(permissions: ["admin:all"])
+
+   #Get User by id
+  findById(recordId: String!): Users
+  @auth(permissions: ["admin:all"])
+
+  #Get image for bank book
+  getBankBookImage(id: Int!): stringResponse
+  @auth(permissions: ["Operations:all"])
+
+  #Set payee with bank book to active
+  approveBankBook(id: Int!): boolResponse
+  @auth(permissions: ["Operations:all"])
+
+  # Remove payee with bank book
+  rejectBankBook(id: Int!): boolResponse
+  @auth(permissions: ["Operations:all"])
+
+  # Should only be accessible by employees with write access to customer data
+  # updateCustomer(customerId: ID!, name: String): Customer
+  # @auth(permissions: ["customer:write"])
+
+  # Should only be accessible to an employee with higher privileges
+  # updateEmployeeRole(employeeId: ID!, role: String): Boolean
+  # @auth(permissions: ["iam:write"])
+}
+
+scalar Date
+
+type Invoice @auth(permissions: ["invoice:read"]) {
+  id: ID!
+  customerId: ID!
+  amount: Float!
+}
+
+type Customer @auth(permissions: ["customer:read", "self:customer"]) {
+  id: ID
+  username: String!
+  name: String
+  invoices: [Invoice]
+  internalNote: String @auth(permissions: ["notes:read"])
+}
+
+type Users @auth(permissions: ["self:anyone"]) {
+  id: String
+  username: String!
+  name: String
+  roles: String!
+}
+
+type Payees @auth(permissions: ["Operations:all"]) {
+  id: Int!
+  customer_id: String!
+  account_name: String
+  account_number: String
+  routing_number: String
+  display_name: String
+  book_image: String
+  active: Boolean
+  created_at: Date
+  updated_at: Date
+}
+
+type AccessToken @auth(permissions: ["self:anyone"]) {
+  token: String
+  role: String
+}
+
+type deleteResult @auth(permissions: ["self:anyone"]) {
+  affected: Int
+}
+
+type stringResponse @auth(permissions: ["self:anyone"]) {
+  response: String
+}
+
+type boolResponse @auth(permissions: ["self:anyone"]) {
+  response: Boolean
+}
