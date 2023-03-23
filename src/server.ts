@@ -27,7 +27,7 @@ async function createApp() {
   const server = await createApolloServer(httpServer);
 
   app.use(
-    '/graphql',
+    '/customer/graphql',
     cors<cors.CorsRequest>({ origin: process.env.FRONTEND_ORIGINS, credentials: true}),
     json(),
     expressMiddleware(server, {
@@ -54,7 +54,7 @@ async function createApp() {
   DataStore.initialize()
   .then(()=>{
     app.listen({ port: process.env.SERVER_PORT }, () =>
-    console.log(`🚀 Server ready at http://localhost:${process.env.SERVER_PORT}/graphql`)
+    console.log(`🚀 Server ready at http://localhost:${process.env.SERVER_PORT}/customer/graphql`)
   );  
   })
   .catch(err=> console.log(err, "Error connecting"))

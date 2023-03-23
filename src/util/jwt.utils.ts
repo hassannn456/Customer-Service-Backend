@@ -11,6 +11,6 @@ export function getUser(token: string) {
   const payload = jwt.decode(jwtToken);
     return {
     id: payload.id,
-    roles: payload.roles
+    roles: payload.roles.toLowerCase()
   }
 }
