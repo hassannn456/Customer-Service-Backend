@@ -29,7 +29,7 @@ export const authResolvers = {
       }
 
       user.username = arg.username;
-      user.password = hashedPassword;
+      user.password = arg.password;
       user.name = arg.name;
       user.roles = arg.roles;
 
@@ -43,6 +43,8 @@ export const authResolvers = {
       });
       }
 
+      user.password = hashedPassword;
+
       try {
         return await user.save();
       } catch (error) {
@@ -54,7 +56,7 @@ export const authResolvers = {
     login: async (
       _: any,
       arg: { username: string; password: string }
-    ): Promise<{ token: string; role: string }> => {
+    ): Promise<{ token: string; id: string; role: string }> => {
       const users = await Admin_users.findOneBy({ username: arg.username });
       if (!users) {
         throw new GraphQLError("Username not found", {
@@ -82,7 +84,7 @@ export const authResolvers = {
             expiresIn: "24hr",
           }
         );
-        return { token, role: users.roles };
+        return { token, id: users.id, role: users.roles };
       } catch (err) {
         throw new GraphQLError(
           "Could not log you in, please check your credentials and try again.",
@@ -93,6 +95,66 @@ export const authResolvers = {
           }
         );
       }
+    },
+    updatePassword: async (
+      _: any,
+      arg: { password: string, newPassword: string },
+      context : { user : {id: any, roles: any}}
+    ): Promise<{ update: string }> => {
+      const users = await Admin_users.findOneBy({ id: context.user.id });
+
+      let isValidPassword: boolean;
+      try {
+        isValidPassword = await bcrypt.compare(arg.password, users.password);
+
+        if (!isValidPassword) {
+          throw new GraphQLError("Invalid Password.", {
+            extensions: {
+              code: "FORBIDDEN",
+            },
+          });
+        }
+      } catch (err) {
+        throw new GraphQLError(
+          "Please recheck your previous password and try again.",
+          {
+            extensions: {
+              code: "FORBIDDEN",
+            },
+          }
+        );
+      }
+
+      let hashedPassword;
+      try {
+        hashedPassword = await bcrypt.hash(arg.newPassword, 12);
+      } catch (err) {
+        throw new GraphQLError("Could not upadte password, please try again.", {
+          extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+        });
+      }
+
+      users.password = arg.newPassword;
+      const errors = Validators(users)
+      
+      if (errors.length > 0) {
+      throw new GraphQLError(errors , {
+        extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+      });
+      }
+
+      users.password = hashedPassword;
+
+      try {
+        await users.save();
+        return {update: "Password Updated Successfully!"}
+      } catch (error) {
+        throw new GraphQLError("Could not create user", {
+          extensions: { code: ApolloServerErrorCode.BAD_REQUEST },
+        });
+      }
+
+
     },
     deleteUser: async (_: any, arg: { recordId: string }): Promise<String> => {
       try {
