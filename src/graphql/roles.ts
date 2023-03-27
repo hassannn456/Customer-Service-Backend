@@ -5,11 +5,11 @@ export const RolePermissions: any = {
     admin: {
       permissions: ["admin:all"],
     },
-    Operations: {
+    operations: {
       permissions: ["Operations:all"],
     },
-    "Customer Service": {
-      permissions: ["Customer Service:all"],
+    "customer service": {
+      permissions: ["CustomerService:all"],
     },
     customer: {
       permissions: ["self:customer"],
