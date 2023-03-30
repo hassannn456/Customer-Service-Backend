@@ -1,0 +1,44 @@
+directive @auth(permissions: [String!]) on FIELD_DEFINITION | OBJECT
+
+type Query {
+  #Get all bank payees
+  getNewBankBooks: [Payees] 
+  @auth(permissions: ["Operations:all"])
+}
+
+type Mutation {
+  #Get image for bank book
+  getBankBookImage(id: Int!): stringResponse
+  @auth(permissions: ["Operations:all"])
+
+  #Set payee with bank book to active
+  approveBankBook(id: Int!): boolResponse
+  @auth(permissions: ["Operations:all"])
+
+  # Remove payee with bank book
+  rejectBankBook(id: Int!): boolResponse
+  @auth(permissions: ["Operations:all"])
+}
+
+scalar Date
+
+type Payees @auth(permissions: ["Operations:all"]) {
+  id: Int!
+  customer_id: String!
+  account_name: String
+  account_number: String
+  routing_number: String
+  display_name: String
+  book_image: String
+  active: Boolean
+  created_at: Date
+  updated_at: Date
+}
+
+type stringResponse @auth(permissions: ["self:anyone"]) {
+  response: String
+}
+
+type boolResponse @auth(permissions: ["self:anyone"]) {
+  response: Boolean
+}
