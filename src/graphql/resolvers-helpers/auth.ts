@@ -10,7 +10,7 @@ import Validators from "../../helpers/validator";
 export const authResolvers = {
   Mutation: {
     signUp: async (_: any, arg: Admin_users): Promise<Admin_users | undefined> => {
-      const users = await Admin_users.findOneBy({ username: arg.username });
+      const users = await Admin_users.findOneBy({ username: arg.username.trim() });
       if (users) {
         throw new GraphQLError("Username already taken", {
           extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
@@ -21,15 +21,15 @@ export const authResolvers = {
 
       let hashedPassword;
       try {
-        hashedPassword = await bcrypt.hash(arg.password, 12);
+        hashedPassword = await bcrypt.hash(arg.password.trim(), 12);
       } catch (err) {
         throw new GraphQLError("Could not create user, please try again.", {
           extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
         });
       }
 
-      user.username = arg.username;
-      user.password = arg.password;
+      user.username = arg.username.trim();
+      user.password = arg.password.trim();
       user.name = arg.name;
       user.roles = arg.roles;
 
@@ -57,7 +57,7 @@ export const authResolvers = {
       _: any,
       arg: { username: string; password: string }
     ): Promise<{ token: string; id: string; role: string }> => {
-      const users = await Admin_users.findOneBy({ username: arg.username });
+      const users = await Admin_users.findOneBy({ username: arg.username.trim() });
       if (!users) {
         throw new GraphQLError("Username not found", {
           extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
@@ -66,7 +66,7 @@ export const authResolvers = {
 
       let isValidPassword: boolean;
       try {
-        isValidPassword = await bcrypt.compare(arg.password, users.password);
+        isValidPassword = await bcrypt.compare(arg.password.trim(), users.password);
 
         if (!isValidPassword) {
           throw new GraphQLError("Invalid Password.", {
@@ -105,7 +105,7 @@ export const authResolvers = {
 
       let isValidPassword: boolean;
       try {
-        isValidPassword = await bcrypt.compare(arg.password, users.password);
+        isValidPassword = await bcrypt.compare(arg.password.trim(), users.password);
 
         if (!isValidPassword) {
           throw new GraphQLError("Invalid Password.", {
@@ -127,14 +127,14 @@ export const authResolvers = {
 
       let hashedPassword;
       try {
-        hashedPassword = await bcrypt.hash(arg.newPassword, 12);
+        hashedPassword = await bcrypt.hash(arg.newPassword.trim(), 12);
       } catch (err) {
         throw new GraphQLError("Could not upadte password, please try again.", {
           extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
         });
       }
 
-      users.password = arg.newPassword;
+      users.password = arg.newPassword.trim();
       const errors = Validators(users)
       
       if (errors.length > 0) {
