@@ -33,11 +33,15 @@ type Mutation {
   @auth(permissions: ["self:anyone"])
 
   #Update Password
-  updatePassword(password: String!, newPassword: String!): updatePassword
+  updatePassword(password: String!, newPassword: String!): updateResult
   @auth(permissions: ["admin:all", "Operations:all", "CustomerService:all"])
 
   #Delete User
-  deleteUser(recordId: String!): String
+  deleteUser(id: String!): updateResult
+  @auth(permissions: ["admin:all"])
+
+  #Update User Role
+  updateRole(id: String!, role: String!): updateResult
   @auth(permissions: ["admin:all"])
 
    #Get user by username
@@ -90,7 +94,7 @@ type deleteResult @auth(permissions: ["self:anyone"]) {
   affected: Int
 }
 
-type updatePassword @auth(permissions: ["self:anyone"]) {
+type updateResult @auth(permissions: ["self:anyone"]) {
   update: String
 }
 
