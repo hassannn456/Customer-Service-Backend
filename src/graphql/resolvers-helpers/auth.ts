@@ -156,19 +156,51 @@ export const authResolvers = {
 
 
     },
-    deleteUser: async (_: any, arg: { recordId: string }): Promise<String> => {
+    deleteUser: async (_: any, arg: { id: string }): Promise<{ update: string }> => {
+      let del;
       try {
-        const del = await Admin_users.delete(arg.recordId);
+        del = await Admin_users.delete(arg.id.trim());
+      } catch (error) {
+        throw new GraphQLError("User not found for the provided id", {
+          extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+        });
+      }
         if (del.affected === 0) {
           throw new GraphQLError("User not found for the provided id", {
             extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
           });
         } else {
-          return "User deleted";
+          return {update: "User deleted"};``
         }
-      } catch (error) {
+    },
+    updateRole: async (
+      _: any,
+      arg: { id: string, role: string },
+    ): Promise<{ update: string }> => {
+      let users
+      try{
+      users = await Admin_users.findOneBy({ id: arg.id.trim() });
+      } catch {
         throw new GraphQLError("User not found for the provided id", {
           extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+        });
+      }
+
+      if (arg.role === '') {
+        throw new GraphQLError("Please select a user role.", {
+          extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+      });
+      }
+
+      users.roles = arg.role;
+      console.log(arg.role)
+
+      try {
+        await users.save();
+        return {update: "Role Updated Successfully!"}
+      } catch (error) {
+        throw new GraphQLError("Could not update role", {
+          extensions: { code: ApolloServerErrorCode.BAD_REQUEST },
         });
       }
     },
