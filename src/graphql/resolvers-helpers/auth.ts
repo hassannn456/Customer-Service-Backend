@@ -156,7 +156,15 @@ export const authResolvers = {
 
 
     },
-    deleteUser: async (_: any, arg: { id: string }): Promise<{ update: string }> => {
+    deleteUser: async (_: any, arg: { id: string },
+      context : { user : {id: any, roles: any}}
+      ): Promise<{ update: string }> => {
+        if (arg.id.trim() === context.user.id) {
+          throw new GraphQLError("Admins are not authorized to delete their own accounts.", {
+            extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+          });
+        }
+
       let del;
       try {
         del = await Admin_users.delete(arg.id.trim());
@@ -176,7 +184,14 @@ export const authResolvers = {
     updateRole: async (
       _: any,
       arg: { id: string, role: string },
+      context : { user : {id: any, roles: any}}
     ): Promise<{ update: string }> => {
+      if (arg.id.trim() === context.user.id) {
+        throw new GraphQLError("Admins are not authorized to update their own roles.", {
+          extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+        });
+      }
+
       let users
       try{
       users = await Admin_users.findOneBy({ id: arg.id.trim() });
@@ -193,7 +208,6 @@ export const authResolvers = {
       }
 
       users.roles = arg.role;
-      console.log(arg.role)
 
       try {
         await users.save();
