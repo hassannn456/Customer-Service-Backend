@@ -63,19 +63,19 @@ type Mutation {
 
 scalar Date
 
-type Invoice @auth(permissions: ["invoice:read"]) {
-  id: ID!
-  customerId: ID!
-  amount: Float!
-}
+# type Invoice @auth(permissions: ["invoice:read"]) {
+#   id: ID!
+#   customerId: ID!
+#   amount: Float!
+# }
 
-type Customer @auth(permissions: ["customer:read", "self:customer"]) {
-  id: ID
-  username: String!
-  name: String
-  invoices: [Invoice]
-  internalNote: String @auth(permissions: ["notes:read"])
-}
+# type Customer @auth(permissions: ["customer:read", "self:customer"]) {
+#   id: ID
+#   username: String!
+#   name: String
+#   invoices: [Invoice]
+#   internalNote: String @auth(permissions: ["notes:read"])
+# }
 
 type Users @auth(permissions: ["self:anyone"]) {
   id: String
