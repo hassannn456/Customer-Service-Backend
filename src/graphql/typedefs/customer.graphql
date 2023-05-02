@@ -1,0 +1,22 @@
+directive @auth(permissions: [String!]) on FIELD_DEFINITION | OBJECT
+
+type Query {
+  #Get all customers
+  getCustomers: [Customer] 
+  @auth(permissions: ["CustomerService:all"])
+}
+
+type Customer @auth(permissions: ["CustomerService:all"]) {
+  customer_id: String
+  user_id: String
+  device_id: String
+  fullname_th: String
+  fullname_en: String
+  national_id: String
+  passport: String
+  image_face: String
+  risk_factor: Int
+  risk_reason: String
+  created_at: Int
+  updated_at: Int
+}
