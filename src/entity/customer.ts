@@ -8,6 +8,7 @@ export class Customer extends BaseEntity{
   @PrimaryColumn()
   customer_id: string
 
+  @Field(()=>String) 
   @Column()
   company_id: string
 
@@ -15,6 +16,7 @@ export class Customer extends BaseEntity{
   @Column()
   user_id: string
 
+  @Field(()=>String) 
   @Column()
   device_id: string
 
