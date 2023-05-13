@@ -36,6 +36,14 @@ export class Payees extends BaseEntity{
     @Column({nullable: true })
     active: boolean;
 
+    @Field(()=>String )
+    @Column({ nullable: true })
+    updated_by: string;
+
+    @Field(()=>String )
+    @Column({ nullable: true })
+    remark: string;    
+
     @Field(()=>Date)
     @Column({ type: 'timestamp' })
     created_at: Date;
