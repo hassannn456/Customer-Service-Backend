@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { ApolloServerErrorCode } from "@apollo/server/errors";
 import { GraphQLError } from "graphql";
-// import { UserInputError } from "apollo-server-express";
 import { Admin_users } from "../../entity/admin_users";
 import { JWT_SECRET } from "../../config";
 import * as bcrypt from "bcrypt";
@@ -144,6 +143,7 @@ export const authResolvers = {
       }
 
       users.password = hashedPassword;
+      users.updated_at = new Date();
 
       try {
         await users.save();
@@ -208,6 +208,7 @@ export const authResolvers = {
       }
 
       users.roles = arg.role;
+      users.updated_at = new Date();
 
       try {
         await users.save();
@@ -257,7 +258,7 @@ export const authResolvers = {
     health: () => "OK",
     getUsers: async (_: any, arg: any) => {
       try {
-        return await Admin_users.find();
+        return await Admin_users.find({order:{created_at:"ASC"}});
       } catch (error) {
         throw new GraphQLError("Could not fetch data.", {
           extensions: { code: ApolloServerErrorCode.BAD_REQUEST },
