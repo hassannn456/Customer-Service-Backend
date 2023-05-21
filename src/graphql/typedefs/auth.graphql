@@ -82,6 +82,8 @@ type Users @auth(permissions: ["self:anyone"]) {
   username: String!
   name: String
   roles: String!
+  created_at: Date
+  updated_at: Date
 }
 
 type AccessToken @auth(permissions: ["self:anyone"]) {
