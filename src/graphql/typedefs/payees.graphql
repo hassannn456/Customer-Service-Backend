@@ -12,11 +12,15 @@ type Mutation {
   @auth(permissions: ["Operations:all"])
 
   #Set payee with bank book to active
-  approveBankBook(id: Int!): boolResponse
+  approveBankBook(id: Int!, remark: String): boolResponse
   @auth(permissions: ["Operations:all"])
 
   # Remove payee with bank book
-  rejectBankBook(id: Int!): boolResponse
+  rejectBankBook(id: Int!, remark: String): boolResponse
+  @auth(permissions: ["Operations:all"])
+
+  # Get bank name
+  getBank(routing_number: String!): stringResponse
   @auth(permissions: ["Operations:all"])
 }
 
