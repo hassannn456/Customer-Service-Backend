@@ -4,19 +4,50 @@ type Query {
   #Get all customers
   getCustomers: [Customer] 
   @auth(permissions: ["CustomerService:all"])
+
+  #Get all nationalities
+  getNationalities: [Nationalities] 
+  @auth(permissions: ["CustomerService:all"])
 }
 
 type Customer @auth(permissions: ["CustomerService:all"]) {
   customer_id: String
+  company_id: String
   user_id: String
   device_id: String
+  fname_th: String
+  mname_th: String
+  lname_th: String
   fullname_th: String
+  fname_en: String
+  mname_en: String
+  lname_en: String
   fullname_en: String
   national_id: String
   passport: String
+  laser_code: String
+  dob: String
+  issue_date: String
+  expire_date: String
+  image_card: String
   image_face: String
+  dopa: String
+  pin: String
   risk_factor: Int
   risk_reason: String
   created_at: Int
   updated_at: Int
+  wallet: String
+  is_approved: Boolean
+  pin_attempts: Int
+  nationality: String
+}
+
+
+type Nationalities @auth(permissions: ["CustomerService:all"]) {
+  id: Int!
+  country: String
+  country_code: String
+  un_code: String
+  created_at: Date
 }
